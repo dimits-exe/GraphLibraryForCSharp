@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,17 +94,17 @@ namespace GraphLibrary {
             ReplaceEdgeValue(edge, newValue);
         }
 
-        public ReadOnlyCollection<VertexT> IncidentEdges(VertexT key) {
+        public ReadOnlyCollection<Edge<VertexT, EdgeT>> IncidentEdges(VertexT key) {
             ThrowIfVertexNotExists(key);
-            return Array.AsReadOnly<VertexT>(GetIncidentEdges(key));
+            return GetIncidentEdges(key).AsReadOnly();
         }
 
         public ReadOnlyCollection<VertexT> Vertices() {
-            return Array.AsReadOnly<VertexT>(GetVertices());
+            return GetVertices().AsReadOnly();
         }
 
         public ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges() {
-            return Array.AsReadOnly<Edge<VertexT, EdgeT>>(GetEdges());
+            return GetEdges().AsReadOnly();
         }
 
         //==================== Implementation methods ====================
@@ -113,28 +113,27 @@ namespace GraphLibrary {
 
         /// <summary>
         /// A method implementing a check on whether or not the specified node exists in the graph.<br></br>
-        /// Used in <see cref="Graph{T}.Remove(T)"/>.
         /// </summary>
         /// <param name="key">The node</param>
         /// <returns>True if the node exists, False otherwise.</returns>
         protected abstract bool NodeExists(VertexT key);
 
         /// <summary>
-        /// A method implementing the <see cref="Graph{T}.Remove(T)"/> method by removing the node from the graph.
+        /// A method implementing the <see cref="Graph{vertexT,EdgeT}.RemoveVertex(vertexT)"/> method by removing the node from the graph.
         /// </summary>
         /// <param name="key">The node to be removed.</param>
         protected abstract void RemoveNode(VertexT key);
 
 
         /// <summary>
-        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.Disconnect(VertexT, VertexT)"/> method 
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> method 
         /// by removing the edge between the 2 nodes from the graph.
         /// </summary>
         /// <returns>The value of the specified edge.</returns>
         protected abstract EdgeT RemoveConnection(VertexT obj1, VertexT obj2);
 
         /// <summary>
-        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.Add(VertexT)"/> method by adding a node with the specified object in the graph.
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.AddVertex(VertexT)"/> method by adding a node with the specified object in the graph.
         /// </summary>
         protected abstract void AddNode(VertexT key);
 
@@ -153,21 +152,30 @@ namespace GraphLibrary {
         protected abstract void ReplaceVertexValue(VertexT oldValue, VertexT newValue);
 
         /// <summary>
-        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.ReplaceEdge(Edge{VertexT}, EdgeT)"/> method 
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.ReplaceEdge(Edge{VertexT, EdgeT}, EdgeT)"/> method 
         /// by replacing the value of the given edge.<br></br>
         /// and weight in the graph.
         /// </summary>
         protected abstract void ReplaceEdgeValue(Edge<VertexT, EdgeT> edge, EdgeT newValue);
 
         /// <summary>
-        /// 
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.IncidentEdges(VertexT)"/> method.
         /// </summary>
-        /// <param name=""></param>
-        protected abstract VertexT[] GetIncidentEdges(VertexT vertex);
+        /// <returns>A List of all edges incident on the vertex.</returns>
+        /// <param name="vertex">The vertex whose neighbours were requested.</param>
+        protected abstract List<Edge<VertexT, EdgeT>> GetIncidentEdges(VertexT vertex);
 
-        protected abstract Edge<VertexT, EdgeT>[] GetEdges();
+        /// <summary>
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.Edges()"/> method.
+        /// </summary>
+        /// <returns>A List of all edges in the graph.</returns>
+        protected abstract List<Edge<VertexT, EdgeT>> GetEdges();
 
-        protected abstract VertexT[] GetVertices();
+        /// <summary>
+        /// A method implementing the <see cref="Graph{VertexT,EdgeT}.Vertices()"/> method.
+        /// </summary>
+        /// <returns>A List of all vertices in the graph.</returns>
+        protected abstract List<VertexT> GetVertices();
 
         //==================== Private methods ====================
 
