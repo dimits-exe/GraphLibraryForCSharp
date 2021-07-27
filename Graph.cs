@@ -1,16 +1,21 @@
-using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraphLibrary {
 
     public abstract class Graph<VertexT, EdgeT> : IGraph<VertexT, EdgeT> {
 
+        /// <summary>
+        /// Creates a read-only wrapper for the graph. Users using this wrapper will have access to all the data within, but will 
+        /// be unable to mutate them.<br></br>
+        /// The graph can still be modified by using the underlying graph reference. To prevent this, create a copy of the graph 
+        /// to pass as an argument to the method.
+        /// </summary>
+        public static ReadOnlyGraph<VertexT, EdgeT> AsReadOnly(Graph<VertexT, EdgeT> graph) {
+            return new ReadOnlyGraph<VertexT, EdgeT>(graph);
+        }
+
         //TODO: Implement static method for thread-safe instances
-        //TODO: Implement static method for read-only instances
 
         private int size;
         private readonly bool isDirected;
@@ -20,6 +25,21 @@ namespace GraphLibrary {
         public Graph(bool isDirected) {
             this.size = 0;
             this.isDirected = isDirected;
+        }
+
+        /// <summary>
+        /// Constructs a graph identical to the one provided.
+        /// </summary>
+        /// <param name="g">A graph of any type.</param>
+        public Graph(Graph<VertexT,EdgeT> g) {
+            this.size = g.Size;
+            this.isDirected = g.IsDirected;
+
+            foreach (VertexT v in g.GetVertices())
+                AddNode(v);
+
+            foreach (Edge<VertexT, EdgeT> edge in g.GetEdges())
+                AddConnection(edge.StartPoint, edge.StartPoint, edge.Value);
         }
 
         public int Size {
@@ -48,14 +68,14 @@ namespace GraphLibrary {
         public void RemoveVertex(VertexT key) {
             ThrowIfVertexNotExists(key);
             size--;
-            RemoveNode(key);
+            RemoveNodeAndConnections(key);
         }
 
         public Edge<VertexT, EdgeT> Connect(VertexT obj1, VertexT obj2, EdgeT value) {
             ThrowIfVertexNotExists(obj1, obj2);
 
             Edge<VertexT, EdgeT> edge = AddConnection(obj1, obj2, value);
-            if (!isDirected)
+            if (!isDirected && (!obj1.Equals(obj2))) //if connection with itself, connect only once 
                 AddConnection(obj2, obj1, value);
 
             return edge;
@@ -64,19 +84,14 @@ namespace GraphLibrary {
         public EdgeT Disconnect(Edge<VertexT, EdgeT> edge) {
             VertexT obj1 = edge.StartPoint;
             VertexT obj2 = edge.EndPoint;
-
             ThrowIfEdgeNotExists(edge);
 
-            if (AreAdjacent(obj1, obj2)) {
-                EdgeT value = RemoveConnection(obj1, obj2);
+            EdgeT value = RemoveConnection(obj1, obj2);
 
-                if (!isDirected)
-                    RemoveConnection(obj2, obj1);
+            if (!isDirected && (!obj1.Equals(obj2))) //if connection with itself, disconnect only once
+                RemoveConnection(obj2, obj1);
 
-                return value;
-
-            } else
-                throw new Exception(String.Format("Couldn't disconnect nodes %s and %s", obj1, obj2));
+            return value;
         }
 
         public bool AreAdjacent(VertexT obj1, VertexT obj2) {
@@ -119,10 +134,11 @@ namespace GraphLibrary {
         protected abstract bool NodeExists(VertexT key);
 
         /// <summary>
-        /// A method implementing the <see cref="Graph{vertexT,EdgeT}.RemoveVertex(vertexT)"/> method by removing the node from the graph.
+        /// A method implementing the <see cref="Graph{vertexT,EdgeT}.RemoveVertex(vertexT)"/> method by removing the node from the graph
+        /// and deleting all edges pointing to it.
         /// </summary>
         /// <param name="key">The node to be removed.</param>
-        protected abstract void RemoveNode(VertexT key);
+        protected abstract void RemoveNodeAndConnections(VertexT key);
 
 
         /// <summary>
@@ -185,15 +201,21 @@ namespace GraphLibrary {
         private void ThrowIfVertexNotExists(params VertexT[] vertices) {
             foreach (VertexT v in vertices)
                 if (!NodeExists(v))
-                    throw new Exception("The object " + v + " doens't exist in the graph");
+                    throw new VertexNonExistentException<VertexT>(v);
         }
 
+        /// <summary>
+        /// Throws an exception if any of the nodes or the edge itself doesn't exist.
+        /// </summary>
         private void ThrowIfEdgeNotExists(Edge<VertexT, EdgeT> edge) {
-            ThrowIfVertexNotExists(edge.StartPoint, edge.EndPoint);
+            try {
+                ThrowIfVertexNotExists(edge.StartPoint, edge.EndPoint);
+            } catch(VertexNonExistentException<VertexT> exc) { //rethrow as EdgeException
+                throw new EdgeNonExistentException<VertexT, EdgeT>("The edge " + edge + " doesn't exist: ", exc);
+            }
 
             if (!AreAdjacent(edge.StartPoint, edge.EndPoint))
-                throw new Exception(String.Format("The nodes %s, %s aren't connected.", edge.StartPoint, edge.EndPoint));
-
+                throw new EdgeNonExistentException<VertexT,EdgeT>(edge);
         }
 
     }
