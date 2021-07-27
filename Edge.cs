@@ -45,7 +45,7 @@ namespace GraphLibrary {
         }
 
         public override string ToString() {
-            return String.Format("Edge from %s to %s", startPoint, endPoint);
+             return String.Format("Edge from {0} to {1}", startPoint, endPoint);
         }
     }
 
