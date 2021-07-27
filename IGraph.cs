@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraphLibrary {
     /// <summary>
@@ -14,7 +11,7 @@ namespace GraphLibrary {
     /// </summary>
     /// <typeparam name="VertexT">The type of objects stored in the graph's vertices.</typeparam>
     /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
-    interface IGraph<VertexT, EdgeT> {
+    public interface IGraph<VertexT, EdgeT> {
 
         int Size {get;}
 
@@ -83,7 +80,7 @@ namespace GraphLibrary {
         /// </summary>
         /// <param name="oldValue">The object to be replaced</param>
         /// <param name="newValue">The new object</param>
-        /// <exception cref="Exception">If "oldValue" doesn't exist.</exception>
+        /// <exception cref="VertexNonExistentException{VertexT}">If "oldValue" doesn't exist.</exception>
         void ReplaceVertex(VertexT oldValue, VertexT newValue);
 
         /// <summary>
@@ -92,7 +89,7 @@ namespace GraphLibrary {
         /// </summary>
         /// <param name="edge">The edge.</param>
         /// <param name="newValue">The value to replace the old one.</param>
-        /// <exception cref="Exception">If the edge doesn't exist.</exception>
+        /// <exception cref="EdgeNonExistentException{VertexT, EdgeT}">If the edge doesn't exist.</exception>
         void ReplaceEdge(Edge<VertexT, EdgeT> edge, EdgeT newValue);
     }
 }
