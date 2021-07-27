@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace GraphLibrary {
     /// <summary>
@@ -13,15 +8,12 @@ namespace GraphLibrary {
     /// </summary>
     /// 
     /// <remarks>
-    /// The graph is implemented with a hash map (in the form of a Dictionary) that holds an array list for every vertex.
-    /// The hash map gives O(1) access to every vertex and the List supports fast traversal through the graph's edges 
-    /// at the expense of more costly on-average insertions and removals. Given that graph traversals are much more common 
-    /// than insertions, the <see cref="List{T}"/> implementation is preferred over <see cref="LinkedList{T}"/>.
+    /// The graph is implemented with a hash map (in the form of a <see cref="Dictionary{TKey, TValue}"/>) that holds a <see cref="LinkedList{T}"/> for every vertex.
     /// 
     /// This graph implementation guarantees the following time complexities for each operation:
     /// <list type="bullet">
     /// <item><see cref="Graph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(m)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(1)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(min(deg(v), deg(w))</item>
@@ -38,20 +30,22 @@ namespace GraphLibrary {
     /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
     public class SparseGraph<VertexT, EdgeT> : Graph<VertexT, EdgeT> {
 
-        private Dictionary<VertexT, List<Edge<VertexT, EdgeT>>> vertices;
+        private Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>> vertices;
 
         public SparseGraph(bool isDirected): base(isDirected) {
-            vertices = new Dictionary<VertexT, List<Edge<VertexT, EdgeT>>>();
+            vertices = new Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>>();
         }
+
+        public SparseGraph(Graph<VertexT, EdgeT> g) : base(g) {}
 
         protected override Edge<VertexT, EdgeT> AddConnection(VertexT obj1, VertexT obj2, EdgeT value) {
             Edge<VertexT, EdgeT> newEdge = new Edge<VertexT, EdgeT>(obj1, obj2, value);
-            vertices[obj1].Add(newEdge);
+            vertices[obj1].AddLast(newEdge);
             return newEdge;
         }
 
         protected override void AddNode(VertexT key) {
-            vertices.Add(key, new List<Edge<VertexT, EdgeT>>());
+            vertices.Add(key, new LinkedList<Edge<VertexT, EdgeT>>());
         }
 
         protected override bool EdgeExists(VertexT obj1, VertexT obj2) {
@@ -84,8 +78,21 @@ namespace GraphLibrary {
             return wantedEdgeValue;
         }
 
-        protected override void RemoveNode(VertexT key) {
+        protected override void RemoveNodeAndConnections(VertexT key) {
             vertices.Remove(key);
+
+            //remove all edges pointing to the vertex
+            foreach (VertexT vertex in vertices.Keys) {
+                LinkedList<Edge<VertexT, EdgeT>> incidentEdges = vertices[vertex];
+                LinkedList<Edge<VertexT, EdgeT>> removedEdges = new LinkedList<Edge<VertexT, EdgeT>>(); 
+
+                foreach (var edge in incidentEdges) // keep note of all edges to be removed
+                    if (edge.EndPoint.Equals(key))
+                        removedEdges.AddLast(edge);
+
+                foreach (var edge in removedEdges) // remove them
+                    incidentEdges.Remove(edge);
+            }
         }
 
         protected override void ReplaceVertexValue(VertexT oldValue, VertexT newValue) {
@@ -94,12 +101,17 @@ namespace GraphLibrary {
         }
 
         protected override void ReplaceEdgeValue(Edge<VertexT, EdgeT> edge, EdgeT newValue) {
-            Edge<VertexT, EdgeT> target = vertices[edge.StartPoint].Find(x => x.EndPoint.Equals(edge.EndPoint));
+            //find edge
+            Edge<VertexT, EdgeT> target = default;
+            foreach (Edge<VertexT, EdgeT> edge2 in vertices[edge.StartPoint])
+                if (edge2.EndPoint.Equals(edge.EndPoint))
+                    target = edge2;
+            //modify edge
             target.Value = newValue;
         }
 
         protected override List<Edge<VertexT, EdgeT>> GetIncidentEdges(VertexT vertex) { 
-            return vertices[vertex]; 
+            return new List<Edge<VertexT, EdgeT>>(vertices[vertex]); //make a copy of the internal list
         }
 
         protected override List<Edge<VertexT, EdgeT>> GetEdges() {
