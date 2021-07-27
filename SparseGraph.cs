@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace GraphLibrary {
     /// <summary>
@@ -65,7 +64,6 @@ namespace GraphLibrary {
 
         protected override EdgeT RemoveConnection(VertexT obj1, VertexT obj2) {
             EdgeT wantedEdgeValue = default;
-            bool found = false; //TODO: REMOVE DEBUG
 
             foreach (Edge<VertexT, EdgeT> edge in vertices[obj1])
                 if (edge.EndPoint.Equals(obj2)) {
@@ -73,7 +71,6 @@ namespace GraphLibrary {
                     vertices[obj1].Remove(edge);
                     found = true;
                 }
-            Debug.Assert(found);
 
             return wantedEdgeValue;
         }
