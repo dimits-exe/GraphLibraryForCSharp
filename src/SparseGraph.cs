@@ -13,8 +13,8 @@ namespace GraphLibrary {
     /// <list type="bullet">
     /// <item><see cref="Graph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(1)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(m)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(deg(w))</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(deg(w))</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(min(deg(v), deg(w))</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceVertex(VertexT, VertexT)"/> O(deg(v))</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceEdge(Edge{VertexT, EdgeT}, EdgeT)"/> O(deg(v))</item>
@@ -22,7 +22,8 @@ namespace GraphLibrary {
     /// <item><see cref="Graph{VertexT, EdgeT}.Edges()"/> O(m)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.Vertices()"/> O(n)</item>
     /// </list>
-    /// Where v, w = the arguments' vertices, n = the number of all vertices and m = the number of all edges.
+    /// Where v, w = the arguments' vertices, n = the number of all vertices, m = the number of all edges
+    /// and deg(o) the degree of vertex 'o'.
     /// 
     /// </remarks>
     /// <typeparam name="VertexT">The type of objects stored in the graph's vertices.</typeparam>
@@ -51,7 +52,7 @@ namespace GraphLibrary {
             //pick the vertex with the least amount of edges to accelerate search
             VertexT leastLargeVertex = vertices[obj1].Count < vertices[obj2].Count ? obj1 : obj2; 
 
-            foreach (Edge<VertexT, EdgeT> edge in vertices[obj1])
+            foreach (Edge<VertexT, EdgeT> edge in vertices[leastLargeVertex])
                 if (edge.EndPoint.Equals(obj2))
                     return true;
 

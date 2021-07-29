@@ -61,6 +61,9 @@ namespace GraphLibrary {
         //==================== Wrapper methods ====================
 
         public void AddVertex(VertexT key) {
+            if (NodeExists(key))
+                throw new InvalidVertexException("The vertex " + key + " already is in the graph.");
+            
             size++;
             AddNode(key);
         }
@@ -73,6 +76,9 @@ namespace GraphLibrary {
 
         public Edge<VertexT, EdgeT> Connect(VertexT obj1, VertexT obj2, EdgeT value) {
             ThrowIfVertexNotExists(obj1, obj2);
+             if (AreAdjacent(obj1, obj2))
+                throw new InvalidEdgeException(System.String.Format("There already is an edge between {0} and {1}.\n" +
+                    "Did you mean to use ReplaceEdge()?", obj1, obj2));
 
             Edge<VertexT, EdgeT> edge = AddConnection(obj1, obj2, value);
             if (!isDirected && (!obj1.Equals(obj2))) //if connection with itself, connect only once 
@@ -201,21 +207,21 @@ namespace GraphLibrary {
         private void ThrowIfVertexNotExists(params VertexT[] vertices) {
             foreach (VertexT v in vertices)
                 if (!NodeExists(v))
-                    throw new VertexNonExistentException<VertexT>(v);
+                    throw new InvalidVertexException("The vertex " + v + " doesn't exist in the graph.");
         }
 
         /// <summary>
         /// Throws an exception if any of the nodes or the edge itself doesn't exist.
         /// </summary>
         private void ThrowIfEdgeNotExists(Edge<VertexT, EdgeT> edge) {
-            try {
+          try {
                 ThrowIfVertexNotExists(edge.StartPoint, edge.EndPoint);
-            } catch(VertexNonExistentException<VertexT> exc) { //rethrow as EdgeException
-                throw new EdgeNonExistentException<VertexT, EdgeT>("The edge " + edge + " doesn't exist: ", exc);
+            } catch(InvalidVertexException exc) { //rethrow as EdgeException
+                throw new InvalidEdgeException("The edge " + edge + " doesn't exist: ", exc);
             }
 
             if (!AreAdjacent(edge.StartPoint, edge.EndPoint))
-                throw new EdgeNonExistentException<VertexT,EdgeT>(edge);
+                throw new InvalidEdgeException(System.String.Format("There is no connection between {0} and {1}.", edge.StartPoint, edge.EndPoint));
         }
 
     }
