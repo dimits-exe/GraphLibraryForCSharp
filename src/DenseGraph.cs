@@ -2,6 +2,34 @@
 using System.Collections.Generic;
 
 namespace GraphLibrary{
+    
+    /// <summary>
+    /// A graph implemented with an adjacency matrix. Uses less memory for dense graphs.<br></br>
+    /// Guarantees instant connection checks and connect/disconnect operations at the cost of slower vertex removals and additions.
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// The graph is not actually implemented with a pure 2D array but with nested <see cref="List{T}"/>s. This guarantees improved memory management
+    /// by avoiding unnecessary resizes, but might be inefficient for specialized uses like intensive matrix operations.
+    /// 
+    /// This graph implementation guarantees the following time complexities for each operation:
+    /// <list type="bullet">
+    /// <item><see cref="Graph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(n)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(n^2)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceVertex(VertexT, VertexT)"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceEdge(Edge{VertexT, EdgeT}, EdgeT)"/> O(1)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.IncidentEdges(VertexT)"/> O(n)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Edges()"/> O(n^2)</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Vertices()"/> O(n)</item>
+    /// </list>
+    /// Where v, w = the arguments' vertices, n = the number of all vertices and m = the number of all edges.
+    /// 
+    /// </remarks>
+    /// <typeparam name="VertexT">The type of objects stored in the graph's vertices.</typeparam>
+    /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
     public class DenseGraph<VertexT, EdgeT> : Graph<VertexT, EdgeT> {
 
         private List<List<EdgeT>> matrix;               //2D array
