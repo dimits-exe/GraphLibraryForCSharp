@@ -127,16 +127,5 @@ namespace GraphLibrary{
         private bool isValid(EdgeT value) {
             return !value.Equals(default(EdgeT));
         }
-
-        public override System.String ToString() {
-            string str = "";
-            foreach(var ls in matrix) {
-                foreach (var value in ls)
-                    str += value + " ";
-                str += "\n";
-            }
-            return str;
-                    
-        }
     }
 }
