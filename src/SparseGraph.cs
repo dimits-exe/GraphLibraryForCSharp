@@ -51,7 +51,7 @@ namespace GraphLibrary {
             //pick the vertex with the least amount of edges to accelerate search
             VertexT leastLargeVertex = vertices[obj1].Count < vertices[obj2].Count ? obj1 : obj2; 
 
-            foreach (Edge<VertexT, EdgeT> edge in vertices[obj1])
+            foreach (Edge<VertexT, EdgeT> edge in vertices[leastLargeVertex])
                 if (edge.EndPoint.Equals(obj2))
                     return true;
 
