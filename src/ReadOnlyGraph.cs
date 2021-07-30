@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 
 namespace GraphLibrary {
@@ -10,7 +10,7 @@ namespace GraphLibrary {
     /// </summary>
     /// <typeparam name="VertexT">The type of objects stored in the graph's vertices.</typeparam>
     /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
-    public class ReadOnlyGraph<VertexT, EdgeT> : IGraph<VertexT, EdgeT> {
+    internal class ReadOnlyGraph<VertexT, EdgeT> : IGraph<VertexT, EdgeT> {
         private static readonly String errorMessage = "This operation violates the READ-ONLY policy of this object.";
 
         private readonly Graph<VertexT, EdgeT> actualGraph; 
