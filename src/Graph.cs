@@ -11,11 +11,19 @@ namespace GraphLibrary {
         /// The graph can still be modified by using the underlying graph reference. To prevent this, create a copy of the graph 
         /// to pass as an argument to the method.
         /// </summary>
-        public static ReadOnlyGraph<VertexT, EdgeT> AsReadOnly(Graph<VertexT, EdgeT> graph) {
+        /// <param name="graph">The graph to be protected.</param>
+        public static IGraph<VertexT, EdgeT> AsReadOnly(IGraph<VertexT, EdgeT> graph) {
             return new ReadOnlyGraph<VertexT, EdgeT>(graph);
         }
 
-        //TODO: Implement static method for thread-safe instances
+         /// <summary>
+        /// Creates and returns a thread-safe wrapper for the graph. Only one such wrapper should be used for each graph as
+        /// concurrent modifications can happen in 2 or more wrappers of the same graph.<br></br>
+        /// </summary>
+        /// <param name="graph">The graph to be protected.</param>
+        public static IGraph<VertexT, EdgeT> ThreadSafe(IGraph<VertexT, EdgeT> graph) {
+            return new ThreadSafeGraph<VertexT, EdgeT>(graph);
+        }
 
         private int size;
         private readonly bool isDirected;
