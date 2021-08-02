@@ -32,15 +32,15 @@ namespace GraphLibrary{
     /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
     public class DenseGraph<VertexT, EdgeT> : Graph<VertexT, EdgeT> {
 
-        private List<List<EdgeT>> matrix;               //2D array
-        private Dictionary<VertexT, int> vertexDict;    // convert objects to indices
-        private List<VertexT> vertexList;               // convert indices to objects
+        private List<List<EdgeT>> matrix = new List<List<EdgeT>>();                         //2D array
+        private Dictionary<VertexT, int> vertexDict = new Dictionary<VertexT, int>();       // convert objects to indices
+        private List<VertexT> vertexList = new List<VertexT>();                             // convert indices to objects
 
-        public DenseGraph(bool isDirected) : base(isDirected) {
-            matrix = new List<List<EdgeT>>();
-            vertexDict = new Dictionary<VertexT, int>();
-            vertexList = new List<VertexT>();
-        }
+        public DenseGraph(bool isDirected) : base(isDirected) {}
+
+        public DenseGraph(GraphData<VertexT, EdgeT> gd) : base(gd) {}
+
+        public DenseGraph(IGraph<VertexT, EdgeT> g) : base(g) {}
 
         protected override Edge<VertexT, EdgeT> AddConnection(VertexT obj1, VertexT obj2, EdgeT value) {
             if (!isValid(value))
