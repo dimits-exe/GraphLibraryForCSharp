@@ -104,5 +104,12 @@ namespace GraphLibrary {
         /// <param name="newValue">The value to replace the old one.</param>
         /// <exception cref="InvalidEdgeException">If the edge doesn't exist.</exception>
         void ReplaceEdge(Edge<VertexT, EdgeT> edge, EdgeT newValue);
+        
+        /// <summary>
+        /// Returns a <see cref="GraphData{VertexT, EdgeT}"/> data structure holding all the graph's data in a uniform way. 
+        /// Used in serialization and de-serialization.
+        /// </summary>
+        /// <returns></returns>
+        GraphData<VertexT, EdgeT> GetGraphData();
     }
 }
