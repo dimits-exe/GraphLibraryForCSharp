@@ -29,27 +29,33 @@ namespace GraphLibrary {
         private readonly bool isDirected;
 
         //==================== Concrete methods ====================
-
+        
         public Graph(bool isDirected) {
             this.size = 0;
             this.isDirected = isDirected;
         }
-
+        
         /// <summary>
         /// Constructs a graph identical to the one provided.
         /// </summary>
         /// <param name="g">A graph of any type.</param>
-        public Graph(Graph<VertexT,EdgeT> g) {
-            this.size = g.Size;
-            this.isDirected = g.IsDirected;
+        public Graph(IGraph<VertexT,EdgeT> g): this(g.GetGraphData()) {}
 
-            foreach (VertexT v in g.GetVertices())
+        /// <summary>
+        /// Constructs a graph according to the data provided.
+        /// </summary>
+        /// <param name="gd">A <see cref="GraphData{VertexT, EdgeT}"/> instance holding the graph's data.</param>
+        public Graph(GraphData<VertexT, EdgeT> gd) {
+            size = gd.size;
+            isDirected = gd.isDirected;
+
+            foreach (VertexT v in gd.vertices)
                 AddNode(v);
 
-            foreach (Edge<VertexT, EdgeT> edge in g.GetEdges())
+            foreach (Edge<VertexT, EdgeT> edge in gd.edges)
                 AddConnection(edge.StartPoint, edge.StartPoint, edge.Value);
         }
-
+        
         public int Size {
             get {
                 return size;
@@ -134,6 +140,10 @@ namespace GraphLibrary {
 
         public ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges() {
             return GetEdges().AsReadOnly();
+        }
+        
+        public GraphData<VertexT, EdgeT> GetGraphData() {
+            return new GraphData<VertexT, EdgeT>(this);
         }
 
         //==================== Implementation methods ====================

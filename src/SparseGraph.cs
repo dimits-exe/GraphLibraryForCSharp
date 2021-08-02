@@ -30,13 +30,13 @@ namespace GraphLibrary {
     /// <typeparam name="EdgeT">The type of objects stored in the graph's edges.</typeparam>
     public class SparseGraph<VertexT, EdgeT> : Graph<VertexT, EdgeT> {
 
-        private Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>> vertices;
+        private Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>> vertices= new Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>>();
 
-        public SparseGraph(bool isDirected): base(isDirected) {
-            vertices = new Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>>();
-        }
+        public SparseGraph(bool isDirected): base(isDirected) {}
 
-        public SparseGraph(Graph<VertexT, EdgeT> g) : base(g) {}
+        public SparseGraph(GraphData<VertexT, EdgeT> gd): base(gd) {}
+
+        public SparseGraph(IGraph<VertexT, EdgeT> g): base(g) {}
 
         protected override Edge<VertexT, EdgeT> AddConnection(VertexT obj1, VertexT obj2, EdgeT value) {
             Edge<VertexT, EdgeT> newEdge = new Edge<VertexT, EdgeT>(obj1, obj2, value);
@@ -49,11 +49,21 @@ namespace GraphLibrary {
         }
 
         protected override bool EdgeExists(VertexT obj1, VertexT obj2) {
-            //pick the vertex with the least amount of edges to accelerate search
-            VertexT leastLargeVertex = vertices[obj1].Count < vertices[obj2].Count ? obj1 : obj2; 
+             //pick the vertex with the least amount of edges to accelerate search
+            VertexT leastVertices;
+            VertexT mostVertices;
 
-            foreach (Edge<VertexT, EdgeT> edge in vertices[leastLargeVertex])
-                if (edge.EndPoint.Equals(obj2))
+            if (vertices[obj1].Count < vertices[obj2].Count) {
+                leastVertices = obj1;
+                mostVertices = obj2;
+            }
+            else {
+                leastVertices = obj2;
+                mostVertices = obj1;
+            }
+
+            foreach (Edge<VertexT, EdgeT> edge in vertices[leastVertices])
+                if (edge.EndPoint.Equals(mostVertices))
                     return true;
 
             return false;
