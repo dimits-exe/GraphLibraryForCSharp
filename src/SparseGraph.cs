@@ -36,6 +36,10 @@ namespace GraphLibrary {
             vertices = new Dictionary<VertexT, LinkedList<Edge<VertexT, EdgeT>>>();
         }
 
+        public SparseGraph(GraphData<VertexT, EdgeT> gd): base(gd) {}
+
+        public SparseGraph(IGraph<VertexT, EdgeT> g): base(g) {}
+
         public SparseGraph(Graph<VertexT, EdgeT> g) : base(g) {}
 
         protected override Edge<VertexT, EdgeT> AddConnection(VertexT obj1, VertexT obj2, EdgeT value) {
@@ -49,11 +53,21 @@ namespace GraphLibrary {
         }
 
         protected override bool EdgeExists(VertexT obj1, VertexT obj2) {
-            //pick the vertex with the least amount of edges to accelerate search
-            VertexT leastLargeVertex = vertices[obj1].Count < vertices[obj2].Count ? obj1 : obj2; 
+             //pick the vertex with the least amount of edges to accelerate search
+            VertexT leastVertices;
+            VertexT mostVertices;
 
-            foreach (Edge<VertexT, EdgeT> edge in vertices[leastLargeVertex])
-                if (edge.EndPoint.Equals(obj2))
+            if (vertices[obj1].Count < vertices[obj2].Count) {
+                leastVertices = obj1;
+                mostVertices = obj2;
+            }
+            else {
+                leastVertices = obj2;
+                mostVertices = obj1;
+            }
+
+            foreach (Edge<VertexT, EdgeT> edge in vertices[leastVertices])
+                if (edge.EndPoint.Equals(mostVertices))
                     return true;
 
             return false;
