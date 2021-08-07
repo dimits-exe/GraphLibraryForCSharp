@@ -6,7 +6,7 @@ namespace GraphLibrary {
     public abstract class Graph<VertexT, EdgeT> : IGraph<VertexT, EdgeT> {
 
         /// <summary>
-        /// Creates a read-only wrapper for the graph. Users using this wrapper will have access to all the data within, but will 
+        /// Creates and returns a read-only wrapper for the graph. Users using this wrapper will have access to all the data within, but will 
         /// be unable to mutate them.<br></br>
         /// The graph can still be modified by using the underlying graph reference. To prevent this, create a copy of the graph 
         /// to pass as an argument to the method.
@@ -39,7 +39,7 @@ namespace GraphLibrary {
         /// Constructs a graph identical to the one provided.
         /// </summary>
         /// <param name="g">A graph of any type.</param>
-        public Graph(IGraph<VertexT,EdgeT> g): this(g.GetGraphData()) {}
+        public Graph(IGraph<VertexT,EdgeT> g): this(UtilityIO.GetData(g)) {}
 
         /// <summary>
         /// Constructs a graph according to the data provided.
@@ -65,6 +65,18 @@ namespace GraphLibrary {
         public bool IsDirected {
             get {
                 return isDirected;
+            }
+        }
+        
+         public ReadOnlyCollection<VertexT> Vertices {
+            get {
+                return GetVertices().AsReadOnly();
+            }
+        }
+
+        public ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges {
+            get {
+                return GetEdges().AsReadOnly();
             }
         }
 
@@ -114,9 +126,9 @@ namespace GraphLibrary {
             return value;
         }
 
-        public bool AreAdjacent(VertexT obj1, VertexT obj2) {
+         public bool AreAdjacent(VertexT obj1, VertexT obj2) {
             ThrowIfVertexNotExists(obj1, obj2);
-            return EdgeExists(obj1, obj2);
+            return !EdgeValue(obj1, obj2).Equals(default(EdgeT));
         }
 
         public void ReplaceVertex(VertexT oldValue, VertexT newValue) {
@@ -128,27 +140,29 @@ namespace GraphLibrary {
             ThrowIfEdgeNotExists(edge);
             ReplaceEdgeValue(edge, newValue);
         }
+        
+        public Edge<VertexT, EdgeT> GetEdge(VertexT obj1, VertexT obj2) {
+            ThrowIfVertexNotExists(obj1, obj2);
+
+            EdgeT value = EdgeValue(obj1, obj2);
+            if (value.Equals(default(EdgeT)))
+                return default(Edge<VertexT, EdgeT>);
+            else
+                return new Edge<VertexT, EdgeT>(obj1, obj2, value);
+        }
 
         public ReadOnlyCollection<Edge<VertexT, EdgeT>> IncidentEdges(VertexT key) {
             ThrowIfVertexNotExists(key);
             return GetIncidentEdges(key).AsReadOnly();
         }
 
-        public ReadOnlyCollection<VertexT> Vertices() {
-            return GetVertices().AsReadOnly();
-        }
-
-        public ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges() {
-            return GetEdges().AsReadOnly();
-        }
-        
-        public GraphData<VertexT, EdgeT> GetGraphData() {
-            return new GraphData<VertexT, EdgeT>(this);
-        }
-
         //==================== Implementation methods ====================
 
-        protected abstract bool EdgeExists(VertexT obj1, VertexT obj2);
+        /// <summary>
+        /// Return the value in the edge between the 2 vertices, if the edge exists.
+        /// </summary>
+        /// <returns>The value if the edge exists, default value if it doesn't.</returns>
+        protected abstract EdgeT EdgeValue(VertexT obj1, VertexT obj2);
 
         /// <summary>
         /// A method implementing a check on whether or not the specified node exists in the graph.<br></br>
@@ -232,14 +246,17 @@ namespace GraphLibrary {
         /// Throws an exception if any of the nodes or the edge itself doesn't exist.
         /// </summary>
         private void ThrowIfEdgeNotExists(Edge<VertexT, EdgeT> edge) {
-          try {
-                ThrowIfVertexNotExists(edge.StartPoint, edge.EndPoint);
-            } catch(InvalidVertexException exc) { //rethrow as EdgeException
-                throw new InvalidEdgeException("The edge " + edge + " doesn't exist: ", exc);
-            }
+             if (edge.Equals(default(Edge<VertexT, EdgeT>)))
+                throw new InvalidEdgeException("This edge was returned as invalid from a method.");
+            
+              try {
+                    ThrowIfVertexNotExists(edge.StartPoint, edge.EndPoint);
+                } catch(InvalidVertexException exc) { //rethrow as EdgeException
+                    throw new InvalidEdgeException("The edge " + edge + " doesn't exist: ", exc);
+                }
 
-            if (!AreAdjacent(edge.StartPoint, edge.EndPoint))
-                throw new InvalidEdgeException(System.String.Format("There is no connection between {0} and {1}.", edge.StartPoint, edge.EndPoint));
+                if (!AreAdjacent(edge.StartPoint, edge.EndPoint))
+                    throw new InvalidEdgeException(System.String.Format("There is no connection between {0} and {1}.", edge.StartPoint, edge.EndPoint));
         }
 
     }

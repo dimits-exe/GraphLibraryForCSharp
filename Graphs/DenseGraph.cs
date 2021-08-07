@@ -14,16 +14,17 @@ namespace GraphLibrary{
     /// 
     /// This graph implementation guarantees the following time complexities for each operation:
     /// <list type="bullet">
-    /// <item><see cref="Graph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(n)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(n^2)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceVertex(VertexT, VertexT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceEdge(Edge{VertexT, EdgeT}, EdgeT)"/> O(1)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.IncidentEdges(VertexT)"/> O(n)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Edges()"/> O(n^2)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Vertices()"/> O(n)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(n)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(n^2)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.GetEdge(VertexT, VertexT)"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.ReplaceVertex(VertexT, VertexT)"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.ReplaceEdge(Edge{VertexT, EdgeT}, EdgeT)"/> O(1)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.IncidentEdges(VertexT)"/> O(n)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.Edges()"/> O(n^2)</item>
+    /// <item><see cref="IGraph{VertexT, EdgeT}.Vertices()"/> O(n)</item>
     /// </list>
     /// Where v, w = the arguments' vertices, n = the number of all vertices and m = the number of all edges.
     /// 
@@ -64,8 +65,8 @@ namespace GraphLibrary{
             matrix.Add(newList);                        //add row
         }
 
-        protected override bool EdgeExists(VertexT obj1, VertexT obj2) {
-            return isValid(matrix[VertToIndex(obj1)][VertToIndex(obj2)]);
+        protected override EdgeT EdgeValue(VertexT obj1, VertexT obj2) {
+            return matrix[VertToIndex(obj1)][VertToIndex(obj2)];
         }
 
         protected override List<Edge<VertexT, EdgeT>> GetEdges() {
@@ -76,8 +77,6 @@ namespace GraphLibrary{
                     EdgeT value = matrix[i][j];
                     if (isValid(value))
                         edges.Add(new Edge<VertexT, EdgeT>(IndexToVert(i), IndexToVert(j), value));
-                    else
-                        throw new ArgumentException("Can't use default parameters for values in this graph!");
                 }
 
             return edges;

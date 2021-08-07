@@ -23,6 +23,18 @@ namespace GraphLibrary {
         /// </summary>
         /// <returns>True if the graph is directed.</returns>
         bool IsDirected {get;}
+        
+        /// <summary>
+        /// Get all objects stored in the graph.
+        /// </summary>
+        /// <returns>A read-only collection containing all objects in no particular order.</returns>
+        ReadOnlyCollection<VertexT> Vertices{ get; }
+
+        /// <summary>
+        /// Get all edges existing in the graph.
+        /// </summary>
+        /// <returns>A read-only collection containing all objects in no particular order.</returns>
+        ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges{get;}
 
         /// <summary>
         /// Whether or not there are any vertices in the graph.
@@ -60,6 +72,14 @@ namespace GraphLibrary {
         /// <returns>The content of the edge.</returns>
         /// <exception cref="InvalidEdgeException">If there is no such edge in the graph.</exception>
         EdgeT Disconnect(Edge<VertexT, EdgeT> edge);
+        
+        /// <summary>
+        /// Returns the edge between 2 vertices, if it exists.
+        /// </summary>
+        /// <param name="obj1">The starting vertex of the edge.</param>
+        /// <param name="obj2">The end vertex of the edge.</param>
+        /// <returns>An <see cref="Edge{VertexT, EdgeT}"/> object if the edge exists, a default type for Edge otherwise.</returns>
+        Edge<VertexT, EdgeT> GetEdge(VertexT obj1, VertexT obj2);
 
         /// <summary>
         /// Checks whether or not the vertices containing the two objects are connected. 
@@ -75,18 +95,6 @@ namespace GraphLibrary {
         /// <returns>A read-only collection of <see cref="VertexT"/>s starting from the given vertex and ending on all the neighbouring vertices.</returns>
         /// <exception cref="InvalidVertexException">If the vertex doesn't exist.</exception>
         ReadOnlyCollection<Edge<VertexT, EdgeT>> IncidentEdges(VertexT key);
-
-        /// <summary>
-        /// Get all objects stored in the graph.
-        /// </summary>
-        /// <returns>A read-only collection containing all objects in no particular order.</returns>
-        ReadOnlyCollection<VertexT> Vertices();
-
-        /// <summary>
-        /// Get all edges existing in the graph.
-        /// </summary>
-        /// <returns>A read-only collection containing all objects in no particular order.</returns>
-        ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges();
 
         /// <summary>
         /// Replace the object stored in vertex oldValue with a new value.
@@ -105,11 +113,5 @@ namespace GraphLibrary {
         /// <exception cref="InvalidEdgeException">If the edge doesn't exist.</exception>
         void ReplaceEdge(Edge<VertexT, EdgeT> edge, EdgeT newValue);
         
-        /// <summary>
-        /// Returns a <see cref="GraphData{VertexT, EdgeT}"/> data structure holding all the graph's data in a uniform way. 
-        /// Used in serialization and de-serialization.
-        /// </summary>
-        /// <returns></returns>
-        GraphData<VertexT, EdgeT> GetGraphData();
     }
 }

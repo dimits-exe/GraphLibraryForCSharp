@@ -13,7 +13,7 @@ namespace GraphLibrary {
     /// <list type="bullet">
     /// <item><see cref="Graph{VertexT, EdgeT}.AddVertex(VertexT)"/> O(1)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.RemoveVertex(VertexT)"/> O(m)</item>
-    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(deg(w))</item>
+    /// <item><see cref="Graph{VertexT, EdgeT}.Connect(VertexT, VertexT, EdgeT)"/> O(1)</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.Disconnect(Edge{VertexT, EdgeT})"/> O(deg(w))</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.AreAdjacent(VertexT, VertexT)"/> O(min(deg(v), deg(w))</item>
     /// <item><see cref="Graph{VertexT, EdgeT}.ReplaceVertex(VertexT, VertexT)"/> O(deg(v))</item>
@@ -48,8 +48,8 @@ namespace GraphLibrary {
             vertices.Add(key, new LinkedList<Edge<VertexT, EdgeT>>());
         }
 
-        protected override bool EdgeExists(VertexT obj1, VertexT obj2) {
-             //pick the vertex with the least amount of edges to accelerate search
+        protected override EdgeT EdgeValue(VertexT obj1, VertexT obj2) {
+            //pick the vertex with the least amount of edges to accelerate search
             VertexT leastVertices;
             VertexT mostVertices;
 
@@ -64,9 +64,9 @@ namespace GraphLibrary {
 
             foreach (Edge<VertexT, EdgeT> edge in vertices[leastVertices])
                 if (edge.EndPoint.Equals(mostVertices))
-                    return true;
+                    return edge.Value;
 
-            return false;
+            return default(EdgeT);
         }
 
         protected override bool NodeExists(VertexT key) {
@@ -80,11 +80,11 @@ namespace GraphLibrary {
                 if (edge.EndPoint.Equals(obj2)) {
                     wantedEdgeValue = edge.Value;
                     vertices[obj1].Remove(edge);
-                    found = true;
                 }
 
             return wantedEdgeValue;
         }
+  
 
         protected override void RemoveNodeAndConnections(VertexT key) {
             vertices.Remove(key);
