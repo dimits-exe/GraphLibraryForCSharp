@@ -6,7 +6,7 @@ namespace GraphLibrary {
     public abstract class Graph<VertexT, EdgeT> : IGraph<VertexT, EdgeT> {
 
         /// <summary>
-        /// Creates a read-only wrapper for the graph. Users using this wrapper will have access to all the data within, but will 
+        /// Creates and returns a read-only wrapper for the graph. Users using this wrapper will have access to all the data within, but will 
         /// be unable to mutate them.<br></br>
         /// The graph can still be modified by using the underlying graph reference. To prevent this, create a copy of the graph 
         /// to pass as an argument to the method.
@@ -126,9 +126,9 @@ namespace GraphLibrary {
             return value;
         }
 
-        public bool AreAdjacent(VertexT obj1, VertexT obj2) {
+         public bool AreAdjacent(VertexT obj1, VertexT obj2) {
             ThrowIfVertexNotExists(obj1, obj2);
-            return EdgeExists(obj1, obj2);
+            return !EdgeValue(obj1, obj2).Equals(default(EdgeT));
         }
 
         public void ReplaceVertex(VertexT oldValue, VertexT newValue) {
