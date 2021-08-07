@@ -72,6 +72,14 @@ namespace GraphLibrary {
         /// <returns>The content of the edge.</returns>
         /// <exception cref="InvalidEdgeException">If there is no such edge in the graph.</exception>
         EdgeT Disconnect(Edge<VertexT, EdgeT> edge);
+        
+        /// <summary>
+        /// Returns the edge between 2 vertices, if it exists.
+        /// </summary>
+        /// <param name="obj1">The starting vertex of the edge.</param>
+        /// <param name="obj2">The end vertex of the edge.</param>
+        /// <returns>An <see cref="Edge{VertexT, EdgeT}"/> object if the edge exists, a default type for Edge otherwise.</returns>
+        Edge<VertexT, EdgeT> GetEdge(VertexT obj1, VertexT obj2);
 
         /// <summary>
         /// Checks whether or not the vertices containing the two objects are connected. 
