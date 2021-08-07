@@ -23,6 +23,18 @@ namespace GraphLibrary {
         /// </summary>
         /// <returns>True if the graph is directed.</returns>
         bool IsDirected {get;}
+        
+        /// <summary>
+        /// Get all objects stored in the graph.
+        /// </summary>
+        /// <returns>A read-only collection containing all objects in no particular order.</returns>
+        ReadOnlyCollection<VertexT> Vertices{ get; }
+
+        /// <summary>
+        /// Get all edges existing in the graph.
+        /// </summary>
+        /// <returns>A read-only collection containing all objects in no particular order.</returns>
+        ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges{get;}
 
         /// <summary>
         /// Whether or not there are any vertices in the graph.
@@ -75,18 +87,6 @@ namespace GraphLibrary {
         /// <returns>A read-only collection of <see cref="VertexT"/>s starting from the given vertex and ending on all the neighbouring vertices.</returns>
         /// <exception cref="InvalidVertexException">If the vertex doesn't exist.</exception>
         ReadOnlyCollection<Edge<VertexT, EdgeT>> IncidentEdges(VertexT key);
-
-        /// <summary>
-        /// Get all objects stored in the graph.
-        /// </summary>
-        /// <returns>A read-only collection containing all objects in no particular order.</returns>
-        ReadOnlyCollection<VertexT> Vertices();
-
-        /// <summary>
-        /// Get all edges existing in the graph.
-        /// </summary>
-        /// <returns>A read-only collection containing all objects in no particular order.</returns>
-        ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges();
 
         /// <summary>
         /// Replace the object stored in vertex oldValue with a new value.
