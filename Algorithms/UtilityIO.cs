@@ -9,7 +9,7 @@ namespace GraphLibrary {
     /// A set of utility methods for the purposes of saving, loading and transferring
     /// a graph's data in an implementation independent way.
     /// </summary>
-    public class UtilityIO {
+    public static class UtilityIO {
 
         /// <summary>
         /// Saves the graph to a portable XML file.
