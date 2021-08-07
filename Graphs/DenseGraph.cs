@@ -77,8 +77,6 @@ namespace GraphLibrary{
                     EdgeT value = matrix[i][j];
                     if (isValid(value))
                         edges.Add(new Edge<VertexT, EdgeT>(IndexToVert(i), IndexToVert(j), value));
-                    else
-                        throw new ArgumentException("Can't use default parameters for values in this graph!");
                 }
 
             return edges;
