@@ -1,5 +1,11 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Threading;
+
+/*
+ * This is a general imeplementation that is meant to support all graphs. Concurrent implementations for
+ * each implementation class would certainly achieve much better performance, as we wouldn't have to lock the
+ * entire graph for every operation. This however is out of the scope of this library for now.
+ */
 
 namespace GraphLibrary {
 
@@ -18,49 +24,69 @@ namespace GraphLibrary {
             rwl = new ReaderWriterLockSlim();
         }
 
-        public int Size { //instant operation, doesn't need a lock
+        int IGraph<VertexT, EdgeT>.Size => actualGraph.Size; //instant operation, doesn't need a lock
+
+        bool IGraph<VertexT, EdgeT>.IsDirected => actualGraph.IsDirected; //instant operation, doesn't need a lock
+
+        ReadOnlyCollection<VertexT> IGraph<VertexT, EdgeT>.Vertices {
+
             get {
-                return actualGraph.Size;
+                rwl.EnterReadLock();
+                try {
+                    return actualGraph.Vertices;
+                }
+                finally {
+                    rwl.ExitReadLock();
+                }
             }
+
         }
 
-        public bool IsDirected { //instant operation, doesn't need a lock
-            get {
-                return actualGraph.IsDirected;
-            }
-        }
+        ReadOnlyCollection<Edge<VertexT, EdgeT>> IGraph<VertexT, EdgeT>.Edges {
 
-        public void AddVertex(VertexT key) {
+            get {
+                rwl.EnterReadLock();
+                try {
+                    return actualGraph.Edges;
+                }
+                finally {
+                    rwl.ExitReadLock();
+                }
+            }
+            
+         }
+
+        void IGraph<VertexT, EdgeT>.AddVertex(VertexT key) {
             rwl.EnterWriteLock();
             try {
                 actualGraph.AddVertex(key);
-            } 
+            }
             finally {
                 rwl.ExitWriteLock();
             }
         }
 
-        public bool AreAdjacent(VertexT obj1, VertexT obj2) {
+        bool IGraph<VertexT, EdgeT>.AreAdjacent(VertexT obj1, VertexT obj2) {
             rwl.EnterReadLock();
             try {
                 return actualGraph.AreAdjacent(obj1, obj2);
-            } 
+            }
             finally {
                 rwl.ExitReadLock();
             }
         }
 
-        public Edge<VertexT, EdgeT> Connect(VertexT obj1, VertexT obj2, EdgeT value) {
+        Edge<VertexT, EdgeT> IGraph<VertexT, EdgeT>.Connect(VertexT obj1, VertexT obj2, EdgeT value) {
             rwl.EnterWriteLock();
             try {
                 return actualGraph.Connect(obj1, obj2, value);
-            } 
+            }
             finally {
                 rwl.ExitWriteLock();
             }
         }
 
-        public EdgeT Disconnect(Edge<VertexT, EdgeT> edge) {
+        EdgeT IGraph<VertexT, EdgeT>.Disconnect(Edge<VertexT, EdgeT> edge) {
             rwl.EnterWriteLock();
             try {
                 return actualGraph.Disconnect(edge);
@@ -70,17 +96,17 @@ namespace GraphLibrary {
             }
         }
 
-        public ReadOnlyCollection<Edge<VertexT, EdgeT>> Edges() {
+        Edge<VertexT, EdgeT> IGraph<VertexT, EdgeT>.GetEdge(VertexT obj1, VertexT obj2) {
             rwl.EnterReadLock();
             try {
-                return actualGraph.Edges();
+                return actualGraph.GetEdge(obj1, obj2);
             }
             finally {
                 rwl.ExitReadLock();
             }
         }
 
-        public ReadOnlyCollection<Edge<VertexT, EdgeT>> IncidentEdges(VertexT key) {
+        ReadOnlyCollection<Edge<VertexT, EdgeT>> IGraph<VertexT, EdgeT>.IncidentEdges(VertexT key) {
             rwl.EnterReadLock();
             try {
                 return actualGraph.IncidentEdges(key);
@@ -90,47 +116,37 @@ namespace GraphLibrary {
             }
         }
 
-        public bool IsEmpty() { //instant operation, doesn't need a lock
+        bool IGraph<VertexT, EdgeT>.IsEmpty() {
             return actualGraph.IsEmpty();
         }
 
-        public void RemoveVertex(VertexT key) {
+        void IGraph<VertexT, EdgeT>.RemoveVertex(VertexT key) {
             rwl.EnterWriteLock();
             try {
                 actualGraph.RemoveVertex(key);
-            } 
+            }
             finally {
                 rwl.ExitWriteLock();
             }
         }
 
-        public void ReplaceEdge(Edge<VertexT, EdgeT> edge, EdgeT newValue) {
+        void IGraph<VertexT, EdgeT>.ReplaceEdge(Edge<VertexT, EdgeT> edge, EdgeT newValue) {
             rwl.EnterWriteLock();
             try {
                 actualGraph.ReplaceEdge(edge, newValue);
-            } 
+            }
             finally {
                 rwl.ExitWriteLock();
             }
         }
 
-        public void ReplaceVertex(VertexT oldValue, VertexT newValue) {
+        void IGraph<VertexT, EdgeT>.ReplaceVertex(VertexT oldValue, VertexT newValue) {
             rwl.EnterWriteLock();
             try {
                 actualGraph.ReplaceVertex(oldValue, newValue);
             }
             finally {
                 rwl.ExitWriteLock();
-            }
-        }
-
-        public ReadOnlyCollection<VertexT> Vertices() {
-            rwl.EnterReadLock();
-            try {
-                return actualGraph.Vertices();
-            }
-            finally {
-                rwl.ExitReadLock();
             }
         }
     }
